@@ -1,0 +1,336 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{fontspec}
+\usepackage{float}
+\usepackage{polyglossia}
+\setotherlanguage{english}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage[table]{xcolor}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{fancyhdr}
+\usepackage{lastpage} % (tuỳ chọn)
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstdefinestyle{sqlstyle}{
+    language=SQL,
+    basicstyle=\normalfont\small,            % <- bỏ \ttfamily để về font bình thường
+    frame=single,
+    framerule=0.4pt,
+    breaklines=true,
+    columns=fullflexible,
+    showstringspaces=false,
+    tabsize=2,
+    numbers=left,
+    numberstyle=\tiny,
+    stepnumber=1,
+    numbersep=8pt,
+    backgroundcolor=\color{gray!8},
+    keywordstyle=\bfseries,
+    commentstyle=\itshape
+}
+
+
+\renewcommand{\arraystretch}{1.5} % tăng chiều cao dòng
+\setlength{\tabcolsep}{10pt}      % tăng padding ngang
+
+\title{MySQL - HackerRank Notebook}
+\author{Pham Dang Hoang Thien}
+\date{\today}
+
+\begin{document}
+% Footer cho TRANG 1
+\fancypagestyle{titlefooter}{
+    \fancyhf{} % xoá header/footer
+    \renewcommand{\headrulewidth}{0pt}
+    \renewcommand{\footrulewidth}{0pt}
+    \fancyfoot[C]{%
+        Student, Ho Chi Minh City, Vietnam\\
+        e-mail: hoangthien312006@gmail.com%
+    }
+}
+
+\maketitle
+\thispagestyle{titlefooter} % trang 1: hiện footer, không hiện số trang
+
+\clearpage                 % sang trang 2
+\pagenumbering{arabic}     % kiểu 1,2,3...
+\setcounter{page}{1}       % trang 2 sẽ mang số 1
+\tableofcontents
+\newpage
+\section{Introduction to MySQL}
+\section{Basic SQL Queries}
+\subsection{Triangle Classification Query}
+Write a query identifying the type of each record in the \texttt{TRIANGLES} table using its three side lengths.  
+Output one of the following statements for each record in the table:
+
+\begin{itemize}
+    \item \textbf{Equilateral}: It's a triangle with 3 sides of equal length.
+    \item \textbf{Isosceles}: It's a triangle with 2 sides of equal length.
+    \item \textbf{Scalene}: It's a triangle with 3 sides of differing lengths.
+    \item \textbf{Not A Triangle}: The given values of A, B, and C don't form a triangle.
+\end{itemize}
+\textbf{Input Format:}
+\begin{table}[H]
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|}
+\hline
+\textit{Column} & \textit{Type} \\ \hline
+\textit{A} & \textit{Integer} \\ \hline
+\textit{B} & \textit{Integer} \\ \hline
+\textit{C} & \textit{Integer} \\ \hline
+\end{tabular}
+\end{table}
+The \texttt{TRIANGLES} table contains three columns: A, B, and C, representing the lengths of the sides of a triangle.
+\newline
+\noindent
+\begin{minipage}[t]{0.48\textwidth}
+\textbf{Sample Input:}
+\vspace{0.3em}
+\begin{tabular}{|c|c|c|}
+\hline
+A & B & C \\ \hline
+20 & 20 & 23 \\ \hline
+20 & 20 & 20 \\ \hline
+20 & 21 & 22 \\ \hline
+13 & 14 & 30 \\ \hline
+\end{tabular}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\textbf{Sample Output:}
+\vspace{0.3em}
+\begin{verbatim}
+Isosceles
+Equilateral
+Scalene
+Not A Triangle
+\end{verbatim}
+\end{minipage}
+
+\subsection*{Solution Hint}
+\textbf{Main idea:}  
+Use a \texttt{CASE} expression to classify each triangle in this order:
+\begin{enumerate}
+    \item Check \textbf{Not A Triangle} first using the triangle inequality:
+    \[
+    A+B \le C \;\; \text{or} \;\; A+C \le B \;\; \text{or} \;\; B+C \le A
+    \]
+    \item If valid, check \textbf{Equilateral}: \texttt{A = B AND B = C}
+    \item Check \textbf{Isosceles}: exactly two sides are equal
+    \item Otherwise, it is \textbf{Scalene}
+\end{enumerate}
+
+\textbf{Required syntax / clauses:}
+\begin{itemize}
+    \item \texttt{CASE WHEN ... THEN ... ELSE ... END}
+    \item Logical operators: \texttt{AND}, \texttt{OR}
+    \item Comparison operators: \texttt{=}, \texttt{<=}
+\end{itemize}
+
+\subsection*{SQL Query}
+\begin{lstlisting}[style=sqlstyle]
+SELECT
+  CASE
+    WHEN A + B <= C OR A + C <= B OR B + C <= A THEN 'Not A Triangle'
+    WHEN A = B AND B = C THEN 'Equilateral'
+    WHEN A = B OR B = C OR A = C THEN 'Isosceles'
+    ELSE 'Scalene'
+  END AS triangle_type
+FROM TRIANGLES;
+\end{lstlisting}
+
+\subsection*{Why this condition order?}
+\begin{itemize}
+    \item Put \texttt{Not A Triangle} first to filter out invalid side combinations.
+    \item Then classify only valid triangles as equilateral, isosceles, or scalene.
+\end{itemize}
+\subsection{Revising Aggregations}
+\textbf{Input Format:}
+The CITY table is described as follows:
+\begin{table}[H]
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|}
+\hline
+\textit{Fields} & \textit{Type} \\ \hline
+\textit{ID} & \textit{Number} \\ \hline
+\textit{NAME} & \textit{VARCHAR2(17)} \\ \hline
+\textit{COUNTRYCODE} & \textit{VARCHAR2(3)} \\ \hline
+\textit{DISTRICT} & \textit{VARCHAR2(20)} \\ \hline
+\textit{POPULATION} & \textit{Number} \\ \hline
+\end{tabular}
+\end{table}
+\subsubsection{The Count Function}
+Query a count of the number of cities in CITY having a Population larger than 100,000.
+\subsubsection*{Solution Hint}
+The query should count the number of rows in the CITY table where the POPULATION is greater than 100,000.
+\newline
+\textit{\textbf{COUNT(*)}} is used to count all rows that meet the specified condition in the WHERE clause.
+AS \textit{\textbf{city\_count}} renames the output column for clarity.
+\subsubsection*{SQL Query}
+\begin{lstlisting}[style=sqlstyle]
+SELECT COUNT(*) AS city_count
+FROM CITY
+WHERE POPULATION > 100000;
+\end{lstlisting}
+\subsubsection{The Sum Function}
+Query the total population of all cities in CITY where District is California.
+\subsection*{Solution Hint}
+The query should sum the POPULATION column in the CITY table where the DISTRICT is 'California'.
+\newline
+\textit{\textbf{SUM(POPULATION)}} is used to calculate the total population of rows that meet the specified condition in the WHERE clause.
+AS \textit{\textbf{total\_population}} renames the output column for clarity.
+\subsubsection*{SQL Query}
+\begin{lstlisting}[style=sqlstyle]
+SELECT SUM(POPULATION) AS total_population
+FROM CITY
+WHERE DISTRICT = 'California';
+\end{lstlisting}
+\subsubsection{Averages}
+Query the average population of all cities in CITY where District is California.
+\subsection*{Solution Hint}
+The query should calculate the average of the POPULATION column in the CITY table where the DISTRICT is 'California'.
+\newline
+\textit{\textbf{AVG(POPULATION)}} is used to calculate the average population of rows that meet the specified condition in the WHERE clause.
+AS \textit{\textbf{average\_population}} renames the output column for
+clarity.
+\subsubsection*{SQL Query}
+\begin{lstlisting}[style=sqlstyle]
+SELECT AVG(POPULATION) AS average_population
+FROM CITY
+WHERE DISTRICT = 'California';
+\end{lstlisting}
+\subsubsection{Average Population}
+Query the average population for all cities in CITY, rounded down to the nearest integer.
+\subsection*{Solution Hint}
+The query should calculate the average of the POPULATION column in the CITY table and round it down to the nearest integer.
+\begin{itemize}
+    \item Use \textit{\textbf{AVG(POPULATION)}} to get the average population.
+    \item Use \textit{\textbf{ROUND(...)}} to round the average population to the nearest integer.
+    \item AS \textit{\textbf{average\_population}} renames the output column for clarity.
+\end{itemize}
+\subsubsection*{SQL Query}
+\begin{lstlisting}[style=sqlstyle]
+SELECT ROUND(AVG(POPULATION)) AS average_population
+FROM CITY;
+\end{lstlisting}
+\subsubsection{Japan Population}
+Query the total population of cities in CITY where CountryCode is JPN.
+\subsection*{Solution Hint}
+The query should sum the POPULATION column in the CITY table where the COUNTRYCODE is 'JPN'.
+\newline
+\textit{\textbf{SUM(POPULATION)}} is used to calculate the total population
+of rows that meet the specified condition in the WHERE clause.
+AS \textit{\textbf{total\_population}} renames the output column for clarity.
+\subsubsection*{SQL Query}
+\begin{lstlisting}[style=sqlstyle]
+SELECT SUM(POPULATION) AS total_population
+FROM CITY
+WHERE COUNTRYCODE = 'JPN';
+\end{lstlisting}
+\subsubsection{Population Density Difference}
+Query the difference between the maximum and minimum populations in CITY.
+\subsection*{Solution Hint}
+The query should calculate the difference between the maximum and minimum values of the POPULATION column in the
+CITY table.
+\begin{itemize}
+    \item Use \textit{\textbf{MAX(POPULATION)}} to get the maximum population.
+    \item Use \textit{\textbf{MIN(POPULATION)}} to get the minimum population.
+    \item AS \textit{\textbf{pop\_diff}} renames the output column for clarity.
+\end{itemize}
+
+\subsubsection*{SQL Query}
+\begin{lstlisting}[style=sqlstyle]
+SELECT MAX(POPULATION) - MIN(POPULATION) AS pop_diff
+FROM CITY;
+\end{lstlisting}
+\subsection{The Blunder}
+Samantha was tasked with calculating the average monthly salaries for all employees in the EMPLOYEES table, but did not realize her keyboard's 0 key was broken until after completing the calculation. She wants your help finding the difference between her miscalculation (using salaries with any zeros removed), and the actual average salary.
+Write a query calculating the amount of error (i.e.: \textit{actual-miscalculated} average monthly salaries), and round it up to the next integer.
+\subsection*{Input Format}
+
+The \texttt{EMPLOYEES} table is described as follows:
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|}
+\hline
+\textit{Column} & \textit{Type} \\ \hline
+\textit{ID} & \textit{Integer} \\ \hline
+\textit{Name} & \textit{String} \\ \hline
+\textit{Salary} & \textit{Integer} \\ \hline
+\end{tabular}
+\end{table}
+
+\textbf{Note:} Salary is per month.
+
+\subsection*{Constraints}
+\[
+1000 < \text{Salary} < 10^5
+\]
+
+\subsection*{Sample Input}
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|}
+\hline
+\textit{ID} & \textit{Name} & \textit{Salary} \\ \hline
+1 & Kristeen & 1420 \\ \hline
+2 & Ashley   & 2006 \\ \hline
+3 & Julia    & 2210 \\ \hline
+4 & Maria    & 3000 \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection*{Sample Output}
+\begin{verbatim}
+2061
+\end{verbatim}
+
+\subsection*{Explanation}
+
+The table below shows the salaries without zeros as they were entered by Samantha:
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|}
+\hline
+\textit{ID} & \textit{Name} & \textit{Salary} \\ \hline
+1 & Kristeen & 142 \\ \hline
+2 & Ashley   & 26  \\ \hline
+3 & Julia    & 221 \\ \hline
+4 & Maria    & 3   \\ \hline
+\end{tabular}
+\end{table}
+
+Samantha computes an average salary of \(98.00\).  
+The actual average salary is \(2159.00\).
+
+The resulting error between the two calculations is
+\[
+2159.00 - 98.00 = 2061.00
+\]
+Since it is equal to the integer \(2061\), it does not get rounded up.
+\subsection*{Solution Hint}
+The query should calculate the difference between the actual average salary and the miscalculated average salary (with zeros removed). The difference should be rounded up to the next integer.
+\begin{itemize}
+    \item \textit{\textbf{AVG(Salary)}} is used to calculate the actual average salary.
+    \item \textit{\textbf{REPLACE(CAST(Salary AS CHAR), '0', '')}} is used to remove all zeros from the salary by converting it to a string, replacing '0' with an empty string, and then casting it back to an unsigned integer.
+    /dễ hiểu là bỏ hết số 0 trong salary (mô phỏng bàn phím hỏng) đi rồi tính trung bình.
+    \item \textit{\textbf{AS UNSIGNED}} ensures that the modified salary is a positive integer for the average calculation. /nhận giá trị từ 0 trở lên.
+\end{itemize}
+\begin{lstlisting}[style=sqlstyle]
+SELECT CEIL(
+        AVG(Salary) - AVG(CAST(REPLACE(CAST(Salary AS CHAR), '0', '') AS UNSIGNED))
+    ) AS error
+FROM EMPLOYEES;
+\end{lstlisting}
+
+\end{document}
