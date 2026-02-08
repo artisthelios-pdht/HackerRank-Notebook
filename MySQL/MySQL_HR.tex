@@ -65,6 +65,7 @@
 \tableofcontents
 \newpage
 \section{Introduction to MySQL}
+
 \section{Basic SQL}
 \subsection{Triangle Classification Query}
 Write a query identifying the type of each record in the \texttt{TRIANGLES} table using its three side lengths.  
@@ -510,11 +511,9 @@ WHERE LAT_N > 38.7780;
 Query the Western Longitude (LONG\_W)where the smallest Northern Latitude (LAT\_N) in STATION is greater than 38.7780. Round your answer to 4 decimal places.
 \subsection*{SQL Query}
 \begin{lstlisting}[style=sqlstyle]
-SELECT ROUND(LONG_W, 4)
-FROM STATION
+SELECT ROUND(LONG_W, 4) FROM STATION
 WHERE LAT_N = (
-    SELECT MIN(LAT_N)
-    FROM STATION
+    SELECT MIN(LAT_N) FROM STATION
     WHERE LAT_N > 38.7780
 );
 \end{lstlisting}
@@ -713,14 +712,14 @@ There are a total of 3 professors.
 \end{verbatim}
 \textbf{Explanation:}
 The results of the first query are formatted to the problem description's specifications. \newline
-The results of the second query are ascendingly ordered first by number of names corresponding to each profession (2<=2<=3<=3), and then alphabetically by profession (Doctor <= Singer, and actor <= Professor).
+The results of the second query are ascendingly ordered first by number of names corresponding to each profession ($2\leqslant 2\leqslant 3\leqslant 3$), and then alphabetically by profession (Doctor $\leqslant$  Singer, and actor $\leqslant$  Professor).
 \newline
 \textbf{Solution Hint: }
 \newline
 \textbf{First Query:}
 Print names with the first letter of their occupation in parentheses, ordered alphabetically.
 \newline
-eg. Ashley + Professor => Ashley(P)
+eg. Ashley + Professor $\rightarrow$ Ashley(P)
 \subsection*{Syntax elements used:}
 \begin{itemize}
     \item \texttt{CONCAT(string1, string2, ...)}: Concatenates multiple strings into one.
@@ -892,5 +891,71 @@ ORDER BY N;
 \textbf{Problem Statement:}
 \href{https://www.hackerrank.com/challenges/the-company/problem?isFullScreen=true}{HackerRank - The Company}
 \subsection*{Solution Hint}
-
+Connect the Company, Lead\_Manager, Senior\_Manager, Manager, and Employee tables using JOINs based on their respective foreign key relationships. 
+Then, use COUNT(DISTINCT ...) to count the unique lead managers, senior managers, managers, and employees for each company. Finally, group the results by company code and founder.
+\begin{itemize}
+    \item Use \textit{\textbf{JOIN}} clauses to connect the tables based on their relationships.
+    \item Use \textit{\textbf{COUNT(DISTINCT column)}} to count unique entries in each category./đếm số mã khác nhau (không trùng) vì khi join có thể bị lặp lại.
+    \item Eg. 1 manager, 3 employees $\rightarrow$ khi join sẽ ra 3 mã manager giống nhau, nên ta dùng DISTINCT để chỉ đếm 1 mã manager đó thôi.
+    \item Use \textit{\textbf{GROUP BY}} to aggregate results by company code and founder.
+\end{itemize}
+\subsection*{SQL Query}
+\begin{lstlisting}[style=sqlstyle]
+SELECT
+    c.company_code,
+    c.founder,
+    COUNT(DISTINCT lm.lead_manager_code)   AS total_lead_managers,
+    COUNT(DISTINCT sm.senior_manager_code) AS total_senior_managers,
+    COUNT(DISTINCT m.manager_code)         AS total_managers,
+    COUNT(DISTINCT e.employee_code)        AS total_employees
+FROM Company c
+JOIN Lead_Manager lm
+    ON c.company_code = lm.company_code
+JOIN Senior_Manager sm
+    ON lm.lead_manager_code = sm.lead_manager_code
+JOIN Manager m
+    ON sm.senior_manager_code = m.senior_manager_code
+JOIN Employee e
+    ON m.manager_code = e.manager_code
+GROUP BY
+    c.company_code,
+    c.founder
+\end{lstlisting}
+\subsection{Print Prime Numbers*}
+Write a query to print all prime numbers less than or equal to 1000. 
+Print your result on a single line, and use the ampersand and character as your separator (instead of a space).\newline
+For example, the output for all prime numbers $\leqslant 10$ would be:
+\begin{center}
+    \texttt{2\&3\&5\&7} 
+\end{center}
+\subsection*{Solution Hint}
+To find all prime numbers less than or equal to 1000, we can use a recursive common table expression (CTE) to generate numbers from 2 to 1000. 
+Then, we can filter out the non-prime numbers by checking for divisibility.
+\begin{itemize}
+    \item Use a recursive CTE to generate numbers from 2 to 1000.
+    \item Use a \textit{\textbf{WHERE NOT EXISTS}} clause to filter out non-prime numbers by checking if there are any divisors for each number.
+    \item Use \textit{\textbf{GROUP\_CONCAT(... SEPARATOR '\&')}} to concatenate the prime numbers into a single string with '\&' as the separator.
+    \item Use \textit{\textbf{FLOOR(SQRT(nums.n))}} to limit the divisor check up to the square root of the number./nghĩa là check từ 2 đến $\sqrt{n}$.
+    \item Check divisibility using \textit{\textbf{nums.n \% d.n = 0}}.
+\end{itemize}
+\subsection*{SQL Query}
+\begin{lstlisting}[style=sqlstyle]
+WITH RECURSIVE nums AS (
+    SELECT 2 AS n
+    UNION ALL
+    SELECT n + 1
+    FROM nums
+    WHERE n < 1000
+)
+SELECT GROUP_CONCAT(n ORDER BY n SEPARATOR '&') AS primes
+FROM nums
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM nums d
+    WHERE d.n <= FLOOR(SQRT(nums.n))
+    AND nums.n % d.n = 0
+    AND d.n > 1
+    AND d.n < nums.n
+);
+\end{lstlisting}
 \end{document}
