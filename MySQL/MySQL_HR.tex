@@ -3,6 +3,7 @@
 \usepackage{float}
 \usepackage{polyglossia}
 \setotherlanguage{english}
+\setotherlanguage{vietnamese}
 \usepackage{amsmath,amssymb}
 \usepackage{graphicx}
 \usepackage{hyperref}
@@ -13,7 +14,8 @@
 \usepackage{fancyhdr}
 \usepackage{lastpage} % (tuỳ chọn)
 \usepackage{listings}
-\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{trees,arrows.meta}
 
 \lstdefinestyle{sqlstyle}{
     language=SQL,
@@ -32,6 +34,7 @@
     keywordstyle=\bfseries,
     commentstyle=\itshape
 }
+
 
 
 \renewcommand{\arraystretch}{1.5} % tăng chiều cao dòng
@@ -62,7 +65,7 @@
 \tableofcontents
 \newpage
 \section{Introduction to MySQL}
-\section{Basic SQL Queries}
+\section{Basic SQL}
 \subsection{Triangle Classification Query}
 Write a query identifying the type of each record in the \texttt{TRIANGLES} table using its three side lengths.  
 Output one of the following statements for each record in the table:
@@ -112,7 +115,6 @@ Not A Triangle
 \end{minipage}
 
 \subsection*{Solution Hint}
-\textbf{Main idea:}  
 Use a \texttt{CASE} expression to classify each triangle in this order:
 \begin{enumerate}
     \item Check \textbf{Not A Triangle} first using the triangle inequality:
@@ -123,8 +125,7 @@ Use a \texttt{CASE} expression to classify each triangle in this order:
     \item Check \textbf{Isosceles}: exactly two sides are equal
     \item Otherwise, it is \textbf{Scalene}
 \end{enumerate}
-
-\textbf{Required syntax / clauses:}
+Syntax elements used:
 \begin{itemize}
     \item \texttt{CASE WHEN ... THEN ... ELSE ... END}
     \item Logical operators: \texttt{AND}, \texttt{OR}
@@ -165,12 +166,12 @@ The CITY table is described as follows:
 \end{table}
 \subsubsection{The Count Function}
 Query a count of the number of cities in CITY having a Population larger than 100,000.
-\subsubsection*{Solution Hint}
+\subsection*{Solution Hint}
 The query should count the number of rows in the CITY table where the POPULATION is greater than 100,000.
 \newline
 \textit{\textbf{COUNT(*)}} is used to count all rows that meet the specified condition in the WHERE clause.
 AS \textit{\textbf{city\_count}} renames the output column for clarity.
-\subsubsection*{SQL Query}
+\subsection*{SQL Query}
 \begin{lstlisting}[style=sqlstyle]
 SELECT COUNT(*) AS city_count
 FROM CITY
@@ -183,7 +184,7 @@ The query should sum the POPULATION column in the CITY table where the DISTRICT 
 \newline
 \textit{\textbf{SUM(POPULATION)}} is used to calculate the total population of rows that meet the specified condition in the WHERE clause.
 AS \textit{\textbf{total\_population}} renames the output column for clarity.
-\subsubsection*{SQL Query}
+\subsection*{SQL Query}
 \begin{lstlisting}[style=sqlstyle]
 SELECT SUM(POPULATION) AS total_population
 FROM CITY
@@ -197,7 +198,7 @@ The query should calculate the average of the POPULATION column in the CITY tabl
 \textit{\textbf{AVG(POPULATION)}} is used to calculate the average population of rows that meet the specified condition in the WHERE clause.
 AS \textit{\textbf{average\_population}} renames the output column for
 clarity.
-\subsubsection*{SQL Query}
+\subsection*{SQL Query}
 \begin{lstlisting}[style=sqlstyle]
 SELECT AVG(POPULATION) AS average_population
 FROM CITY
@@ -212,7 +213,7 @@ The query should calculate the average of the POPULATION column in the CITY tabl
     \item Use \textit{\textbf{ROUND(...)}} to round the average population to the nearest integer.
     \item AS \textit{\textbf{average\_population}} renames the output column for clarity.
 \end{itemize}
-\subsubsection*{SQL Query}
+\subsection*{SQL Query}
 \begin{lstlisting}[style=sqlstyle]
 SELECT ROUND(AVG(POPULATION)) AS average_population
 FROM CITY;
@@ -225,7 +226,7 @@ The query should sum the POPULATION column in the CITY table where the COUNTRYCO
 \textit{\textbf{SUM(POPULATION)}} is used to calculate the total population
 of rows that meet the specified condition in the WHERE clause.
 AS \textit{\textbf{total\_population}} renames the output column for clarity.
-\subsubsection*{SQL Query}
+\subsection*{SQL Query}
 \begin{lstlisting}[style=sqlstyle]
 SELECT SUM(POPULATION) AS total_population
 FROM CITY
@@ -242,7 +243,7 @@ CITY table.
     \item AS \textit{\textbf{pop\_diff}} renames the output column for clarity.
 \end{itemize}
 
-\subsubsection*{SQL Query}
+\subsection*{SQL Query}
 \begin{lstlisting}[style=sqlstyle]
 SELECT MAX(POPULATION) - MIN(POPULATION) AS pop_diff
 FROM CITY;
@@ -250,7 +251,7 @@ FROM CITY;
 \subsection{The Blunder}
 Samantha was tasked with calculating the average monthly salaries for all employees in the EMPLOYEES table, but did not realize her keyboard's 0 key was broken until after completing the calculation. She wants your help finding the difference between her miscalculation (using salaries with any zeros removed), and the actual average salary.
 Write a query calculating the amount of error (i.e.: \textit{actual-miscalculated} average monthly salaries), and round it up to the next integer.
-\subsection*{Input Format}
+\textbf{Input Format}
 
 The \texttt{EMPLOYEES} table is described as follows:
 
@@ -268,12 +269,12 @@ The \texttt{EMPLOYEES} table is described as follows:
 
 \textbf{Note:} Salary is per month.
 
-\subsection*{Constraints}
+\textbf{Constraints}
 \[
 1000 < \text{Salary} < 10^5
 \]
 
-\subsection*{Sample Input}
+\textbf{Sample Input}
 
 \begin{table}[H]
 \centering
@@ -288,12 +289,12 @@ The \texttt{EMPLOYEES} table is described as follows:
 \end{tabular}
 \end{table}
 
-\subsection*{Sample Output}
+\textbf{Sample Output}
 \begin{verbatim}
 2061
 \end{verbatim}
 
-\subsection*{Explanation}
+\textbf{Explanation}
 
 The table below shows the salaries without zeros as they were entered by Samantha:
 
@@ -326,11 +327,570 @@ The query should calculate the difference between the actual average salary and 
     /dễ hiểu là bỏ hết số 0 trong salary (mô phỏng bàn phím hỏng) đi rồi tính trung bình.
     \item \textit{\textbf{AS UNSIGNED}} ensures that the modified salary is a positive integer for the average calculation. /nhận giá trị từ 0 trở lên.
 \end{itemize}
+\subsection*{SQL Query}
 \begin{lstlisting}[style=sqlstyle]
 SELECT CEIL(
         AVG(Salary) - AVG(CAST(REPLACE(CAST(Salary AS CHAR), '0', '') AS UNSIGNED))
     ) AS error
 FROM EMPLOYEES;
 \end{lstlisting}
+\subsection{Top Earners}
+We define an employee's total earnings to be their monthly \textit{salary x months} worked, and the maximum total earnings to be the maximum total earnings for any employee in the Employee table. Write a query to find the maximum total earnings for all employees as well as the total number of employees who have maximum total earnings. Then print these values as 2 space-separated integers.
+\textbf{Input Format:}
+The \textbf{EMPLOYEES} table cointaining emoployee data for a companyis described as follows:
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textit{Column} & \textit{Type} \\ \hline   
+\textit{employee\_id} & \textit{Integer} \\ \hline
+\textit{Name} & \textit{String} \\ \hline
+\textit{Months} & \textit{Integer} \\\hline
+\textit{Salary} & \textit{Integer} \\ \hline
+\end{tabular}
+\end{table}
+where employee\_id is an employee's ID number, name is their name, months is the total number of months they've been working for the company, and salary is their monthly salary.
+\newline
+\textbf{Sample Input:}
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{employee\_id} & \textbf{name} & \textbf{months} & \textbf{salary} \\ \hline
+12228 & Rose     & 15 & 1968 \\ \hline
+33645 & Angela   & 1  & 3443 \\ \hline
+45692 & Frank    & 17 & 1608 \\ \hline
+56118 & Patrick  & 7  & 1345 \\ \hline
+59725 & Lisa     & 11 & 2330 \\ \hline
+74197 & Kimberly & 16 & 4372 \\ \hline
+78454 & Bonnie   & 8  & 1771 \\ \hline
+83565 & Michael  & 6  & 2017 \\ \hline
+98607 & Todd     & 5  & 3396 \\ \hline
+99989 & Joe      & 9  & 3573 \\ \hline
+\end{tabular}
+\end{table}
+
+\textbf{Sample Output}
+\begin{center}
+\texttt{69952 1}
+\end{center}
+
+\textbf{Explanation}
+
+The table and earnings data are depicted below:
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{employee\_id} & \textbf{name} & \textbf{months} & \textbf{salary} & \textbf{earnings} \\ \hline
+12228 & Rose     & 15 & 1968 & 29520 \\ \hline
+33645 & Angela   & 1  & 3443 & 3443  \\ \hline
+45692 & Frank    & 17 & 1608 & 27336 \\ \hline
+56118 & Patrick  & 7  & 1345 & 9415  \\ \hline
+59725 & Lisa     & 11 & 2330 & 25630 \\ \hline
+74197 & Kimberly & 16 & 4372 & 69952 \\ \hline
+78454 & Bonnie   & 8  & 1771 & 14168 \\ \hline
+83565 & Michael  & 6  & 2017 & 12102 \\ \hline
+98607 & Todd     & 5  & 3396 & 16980 \\ \hline
+99989 & Joe      & 9  & 3573 & 32157 \\ \hline
+\end{tabular}
+\end{table}
+The maximum earnings value is \(69952\). The only employee with earnings \(= 69952\) is Kimberly, so we print the maximum earnings value \((69952)\) and the count of employees who earned \(\$69952\) \((1)\) as two space-separated values.
+\subsection*{Solution Hint}
+eg. if total earnings is: 12000, 15000, 15000, 8000.
+Then the max total earnings is 15000, and there are 2 employees with that earning. So the output is "15000 2".
+\begin{itemize}
+    \item 1. Calculate total earnings for each employee as \textit{months * salary}.
+    \item 2. Find the maximum total earnings using \textit{MAX(months * salary)}.
+    \item 3. Count the number of employees with total earnings equal to the maximum using \textit{COUNT(*)} with a WHERE clause.
+\end{itemize}
+\subsection*{SQL Query}
+\begin{lstlisting}[style=sqlstyle]
+SELECT
+    MAX(months * salary) AS max_earnings,
+    COUNT(*) AS employee_count
+FROM EMPLOYEES
+WHERE (months * salary) = (
+    SELECT MAX(months * salary)
+    FROM EMPLOYEES
+);
+\end{lstlisting}
+\subsection{Weather Observation}
+\textbf{Input Format:}
+The STATION table is described as follows:
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|}
+\hline
+\textit{Column} & \textit{Type} \\ \hline
+\textit{ID} & \textit{Number} \\ \hline
+\textit{CITY} & \textit{VARCHAR2(21)} \\ \hline
+\textit{STATE} & \textit{VARCHAR2(2)} \\ \hline
+\textit{LAT\_N} & \textit{Number} \\ \hline
+\textit{LONG\_W} & \textit{Number} \\ \hline
+\end{tabular}
+\end{table}
+where LAT\_N is the northern latitude and LONG\_W is the western longitude.
+\subsubsection{Station 2}
+Query the following two values from STATION:
+\begin{enumerate}
+    \item The sum of all values in LAT\_N rounded to scale of 2 decimal places.
+    \item The sum of all values in LONG\_W rounded to scale of 2 decimal places.
+\end{enumerate}
+\textbf{Output Format:}
+Your results must be in the form:
+\begin{center}
+\texttt{lat lon}
+\end{center}
+\noindent
+where \textit{lat} is the sum of all values in LAT\_N and \textit{lon} is the sum of all values in LONG\_W. Both results must be rounded to a scale of 2 decimal places.
+\subsection*{Solution Hint}
+\begin{itemize}
+    \item Use \textit{\textbf{SUM(LAT\_N)}} to calculate the sum of all values in LAT\_N.
+    \item Use \textit{\textbf{SUM(LONG\_W)}} to calculate the sum of all values in LONG\_W.
+    \item Use \textit{\textbf{ROUND(..., 2)}} to round both sums to a scale of 2 decimal places.
+    \item AS \textit{\textbf{lat}} and AS \textit{\textbf{lon}} rename the output columns for clarity.
+\end{itemize}
+\subsection*{SQL Query}
+\begin{lstlisting}[style=sqlstyle]
+SELECT
+    ROUND(SUM(LAT_N), 2) AS lat,
+    ROUND(SUM(LONG_W), 2) AS lon
+FROM STATION;
+\end{lstlisting}
+\subsubsection{Station 13}
+Query the sum of Northern Latitudes (LAT\_N) from STATION having values greater than 38.7880 and less than 137.2345. Truncate your answer to 4 decimal places.
+
+\subsection*{SQL Query}
+\begin{lstlisting}[style=sqlstyle]
+SELECT ROUND(SUM(LAT_N), 4) AS total_latitude
+FROM STATION
+WHERE LAT_N > 38.7880 AND LAT_N < 137.2345;
+\end{lstlisting}
+\subsubsection{Station 14}
+Query the greatest value of the Northern Latitudes (LAT\_N) from STATION that is less than 137.2345. Truncate your answer to 4 decimal places.
+\subsection*{Solution Hint}
+With x as a number and n as the number of decimal places:
+\begin{itemize}
+    \item \textit{\textbf{ROUND(x, n)}} is rounding function that rounds the number \(x\) to \(n\) decimal places. eg. \textit{\textbf{ROUND(3.14159, 4)}} = 3.1416
+    \item \textit{\textbf{TRUNCATE(x, n)}} is truncating function that truncates the number \(x\) to \(n\) decimal places. eg. \textit{\textbf{TRUNCATE(3.14159, 4)}} = 3.1415
+\end{itemize}
+\subsection*{SQL Query}
+\begin{lstlisting}[style=sqlstyle]
+SELECT TRUNCATE(MAX(LAT_N), 4) AS max_latitude
+FROM STATION
+WHERE LAT_N < 137.2345;
+\end{lstlisting}
+\subsubsection{Station 15}
+Query the Western Longitude (LONG\_W) for the largest Northern Latitude (LAT\_N) in STATION that is less than 137.2345. Round your answer to 4 decimal places.
+\subsection*{SQL Query}
+\begin{lstlisting}[style=sqlstyle]
+SELECT TRUNCATE(LONG_W, 4)
+FROM STATION
+WHERE LAT_N = (
+    SELECT MAX(LAT_N)
+    FROM STATION
+    WHERE LAT_N < 137.2345
+);
+\end{lstlisting}
+\subsubsection{Station 16}
+Query the smallest Northern Latitude (LAT\_N) from STATION that is greater than 38.7780. Round your answer to 4 decimal places.
+\subsection*{SQL Query}
+\begin{lstlisting}[style=sqlstyle]
+SELECT ROUND(MIN(LAT_N), 4)
+FROM STATION
+WHERE LAT_N > 38.7780;
+\end{lstlisting}
+\subsubsection{Station 17}
+Query the Western Longitude (LONG\_W)where the smallest Northern Latitude (LAT\_N) in STATION is greater than 38.7780. Round your answer to 4 decimal places.
+\subsection*{SQL Query}
+\begin{lstlisting}[style=sqlstyle]
+SELECT ROUND(LONG_W, 4)
+FROM STATION
+WHERE LAT_N = (
+    SELECT MIN(LAT_N)
+    FROM STATION
+    WHERE LAT_N > 38.7780
+);
+\end{lstlisting}
+\subsection{Population Census}
+Given the CITY and COUNTRY tables, query the sum of the populations of all cities where the CONTINENT is 'Asia'.
+\newline
+Note: CITY.CountryCode and COUNTRY.Code are matching key columns.
+\newline
+\textbf{Input Format:}
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|}
+\hline
+\textit{Column} & \textit{Type} \\ \hline
+\textit{ID} & \textit{NUMBER} \\ \hline
+\textit{NAME} & \textit{VARCHAR2(17)} \\ \hline
+\textit{COUNTRYCODE} & \textit{VARCHAR2(3)} \\ \hline
+\textit{DISTRICT} & \textit{VARCHAR2(20)} \\ \hline
+\textit{POPULATION} & \textit{NUMBER} \\ \hline
+\end{tabular}
+\end{table}
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|}
+\hline
+\textit{Column} & \textit{Type} \\ \hline   
+\textit{CODE} & \textit{VARCHAR2(3)} \\ \hline
+\textit{NAME} & \textit{VARCHAR2(44)} \\ \hline
+\textit{CONTINENT} & \textit{VARCHAR2(13)} \\ \hline
+\textit{REGION} & \textit{VARCHAR2(25)} \\ \hline
+\textit{SURFACEAREA} & \textit{NUMBER} \\ \hline
+\textit{INDEPYEAR} & \textit{VARCHAR2(5)} \\ \hline
+\textit{POPULATION} & \textit{NUMBER} \\ \hline
+\textit{LIFEEXPECTANCY} & \textit{VARCHAR2(4)} \\ \hline
+\textit{GNP} & \textit{NUMBER} \\ \hline
+\textit{GNPOLD} & \textit{VARCHAR2(9)} \\ \hline
+\textit{LOCALNAME} & \textit{VARCHAR2(44)} \\ \hline
+\textit{GOVERNMENTFORM} & \textit{VARCHAR2(44)} \\ \hline
+\textit{HEADOFSTATE} & \textit{VARCHAR2(32)} \\ \hline
+\textit{CAPITAL} & \textit{VARCHAR2(4)} \\ \hline
+\textit{CODE2} & \textit{VARCHAR2(2)} \\ \hline
+\end{tabular}
+\end{table}
+\subsection*{Solution Hint}
+Join the CITY and COUNTRY tables on the matching key columns (CITY.CountryCode and COUNTRY.Code) and sum the populations of cities where the continent is 'Asia'.
+\begin{itemize}
+    \item Use a \textit{\textbf{JOIN}} clause to combine CITY and COUNTRY tables based on matching key columns.
+    \item Use a \textit{\textbf{WHERE}} clause to filter for rows where CO.CONTINENT = 'Asia'.
+\end{itemize}
+\subsection*{SQL Query}
+\begin{lstlisting}[style=sqlstyle]
+SELECT SUM(ci.population) AS total_population
+FROM CITY ci
+JOIN COUNTRY co
+    ON ci.CountryCode = co.Code
+WHERE co.Continent = 'Asia';
+\end{lstlisting}
+\subsection{African Cities}
+Given the CITY and COUNTRY tables, query the names of all cities where the CONTINENT is 'Africa'.
+\newline
+Note: the input format and table structures are the same as the previous problem.
+\subsection*{SQL Query}
+\begin{lstlisting}[style=sqlstyle]
+SELECT ci.name AS city_Afr
+FROM city ci
+JOIN country co 
+    ON ci.countrycode = co.code 
+WHERE co.continent = 'Africa';
+\end{lstlisting}
+\subsection{Average Population of Each Continent}
+Given the CITY and COUNTRY tables, query the names of all the continents (COUNTRY.Continent) and their respective average city populations (CITY.Population) rounded down to the nearest integer.
+\newline
+Note: the input format and table structures are the same as the previous problem.
+\subsubsection*{Solution Hint}
+Using \textbf{GROUP BY clause:} is used to group rows that have \textbf{the same values} in specified columns into summary rows. It is often combined with aggregate functions like COUNT(), SUM(), AVG(), MAX(), and MIN() to produce summarized results./đề yêu cầu tính trung bình dân số theo từng châu lục, nên ta sẽ nhóm các thành phố theo châu lục rồi tính trung bình dân số của từng nhóm đó.
+\subsection*{SQL Query}
+\begin{lstlisting}[style=sqlstyle]
+SELECT co.continent, FLOOR(AVG(ci.population))
+FROM CITY ci 
+JOIN COUNTRY co 
+    ON ci.CountryCode = co.Code 
+GROUP BY co.continent;
+\end{lstlisting}
+\subsection{Draw The Triangle 1}
+P(R) represents a pattern drawn by Julia in R rows. The following pattern represents P(5):
+\begin{verbatim}
+* * * * * 
+* * * * 
+* * * 
+* * 
+*
+\end{verbatim}
+Write a query to print the pattern P(20).
+\subsection*{Solution Hint} 
+Use a recursive common table expression (CTE) to generate numbers from 20 down to 1, and then use the REPEAT function to create the desired pattern for each number.
+\begin{itemize}
+    \item WITH RECURSIVE nums AS (...): This defines a recursive CTE named nums that generates numbers starting from 20 down to 1.
+    \item SELECT 20 AS n: This is the base case of the recursion, starting with the number 20.
+    \item UNION ALL SELECT n - 1 FROM nums WHERE n > 1: This is the recursive part that decrements n by 1 until it reaches 1.
+    \item SELECT REPEAT('* ', n) AS pattern FROM nums;: This selects each number n from the CTE and uses the REPEAT function to generate a string of asterisks followed by spaces, repeated n times.
+\end{itemize}
+\subsection*{SQL Query}
+\begin{lstlisting}[style=sqlstyle]
+WITH RECURSIVE nums AS (
+    SELECT 20 AS n
+    UNION ALL
+    SELECT n - 1
+    FROM nums
+    WHERE n > 1
+)
+SELECT REPEAT('* ', n) AS pattern
+FROM nums;
+\end{lstlisting}
+\subsection{Draw The Triangle 2}
+P(R) represents a pattern drawn by Julia in R rows. The following pattern represents P(5):
+\begin{verbatim}
+* 
+* * 
+* * * 
+* * * * 
+* * * * *
+\end{verbatim}
+Write a query to print the pattern P(20).
+\subsection*{SQL Query}
+\begin{lstlisting}[style=sqlstyle]
+WITH RECURSIVE nums AS (
+    SELECT 1 AS n
+    UNION ALL
+    SELECT n + 1
+    FROM nums
+    WHERE n < 20)
+SELECT REPEAT('* ', n) AS pattern
+FROM nums;
+\end{lstlisting}
+\newpage
+\section{Intermediate SQL}
+\subsection{The PADS}
+Generate the following two result sets:
+\begin{enumerate}
+    \item Query an alphabetically ordered list of all names in OCCUPATIONS, immediately followed by the first letter of each profession as a parenthetical (i.e.: enclosed in parentheses). For example: AnActorName(A), ADoctorName(D), AProfessorName(P), and ASingerName(S).
+    \item Query the number of ocurrences of each occupation in OCCUPATIONS. Sort the occurrences in ascending order, and output them in the following format:
+    \begin{center}
+        \texttt{There are a total of [occupation\_count] [occupation]s.}
+    \end{center}
+    where \texttt{[occupation\_count]} is the number of occurrences of an occupation in OCCUPATIONS and \texttt{[occupation]} is the lowercase occupation name. If more than one Occupation has the same \texttt{[occupation\_count]}, they should be ordered alphabetically.
+\end{enumerate}
+Note: There will be at least two entries in the table for each type of occupation.
+\textbf{Input Format:}
+The OCCUPATIONS table is described as follows:
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|} \hline
+\textit{Column} & \textit{Type} \\ \hline
+\textit{name} & \textit{String} \\ \hline
+\textit{occupation} & \textit{String} \\ \hline
+\end{tabular}
+\end{table}
+Occupations will only contain one of the following values: \textbf{Doctor}, \textbf{Professor}, \textbf{Singer}, \textbf{Actor}.
+\textbf{Sample Input:}
+\begin{table}[H]
+\centering 
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|} \hline
+\textit{name} & \textit{occupation} \\ \hline
+Samantha & Doctor \\ \hline
+Julia  & Actor \\ \hline
+Maria   & Actor \\ \hline
+Meera    & Singer \\ \hline
+Ashely & Professor \\ \hline
+Ketty  & Professor \\ \hline
+Christeen & Professor \\ \hline
+Jane  & Actor \\ \hline
+Jenny & Doctor \\ \hline
+Priya  & Singer \\ \hline
+\end{tabular}
+\end{table}
+\textbf{Sample Output:}
+\begin{verbatim}
+Ashely(P)
+Christeen(P)
+Jane(A)
+Jenny(D)
+Julia(A)
+Ketty(P)
+Maria(A)
+Meera(S)
+Priya(S)
+Samantha(D)
+There are a total of 2 doctors.
+There are a total of 2 singers.
+There are a total of 3 actors.
+There are a total of 3 professors.
+\end{verbatim}
+\textbf{Explanation:}
+The results of the first query are formatted to the problem description's specifications. \newline
+The results of the second query are ascendingly ordered first by number of names corresponding to each profession (2<=2<=3<=3), and then alphabetically by profession (Doctor <= Singer, and actor <= Professor).
+\newline
+\textbf{Solution Hint: }
+\newline
+\textbf{First Query:}
+Print names with the first letter of their occupation in parentheses, ordered alphabetically.
+\newline
+eg. Ashley + Professor => Ashley(P)
+\subsection*{Syntax elements used:}
+\begin{itemize}
+    \item \texttt{CONCAT(string1, string2, ...)}: Concatenates multiple strings into one.
+    \item \texttt{LEFT(string, number)}: Extracts the leftmost 'number' characters from 'string'.
+    \item \texttt{ORDER BY column}: Sorts the result set based on the specified column.
+\end{itemize}
+\subsection*{SQL Query - First Query}
+\begin{lstlisting}[style=sqlstyle]
+SELECT CONCAT(Name, '(', LEFT(Occupation, 1), ')')
+FROM OCCUPATIONS
+ORDER BY Name;
+\end{lstlisting}
+\textbf{Second Query:}
+Count people in each occupation and format the output as specified.
+\subsection*{Syntax elements used:}
+\begin{itemize}
+    \item \texttt{COUNT(*)}: Counts the number of rows in each group.
+    \item \texttt{LOWER(string)}: Converts 'string' to lowercase.
+    \item \texttt{GROUP BY column}: Groups rows that have the same values in the specified column.
+    \item \texttt{ORDER BY column1, column2}: Sorts the result set first by 'column1', then by 'column2'.
+    \item \texttt{CONCAT(string1, string2, ...)}: Concatenates multiple strings into one./ghép câu
+\end{itemize}
+\subsection*{SQL Query - Second Query}
+\begin{lstlisting}[style=sqlstyle]
+SELECT CONCAT('There are a total of ', COUNT(*), ' ', LOWER(Occupation), 's.')
+FROM OCCUPATIONS
+GROUP BY Occupation --group by occupation to count each occupation
+ORDER BY COUNT(*), Occupation; --sort by count asc, then occupation alphabetically
+\end{lstlisting}
+\subsection{Occupations}
+Pivot the Occupation column in OCCUPATIONS so that each Name is sorted alphabetically and displayed underneath its corresponding Occupation. The output should consist of four columns (Doctor, Professor, Singer, and Actor) in that specific order, with their respective names listed alphabetically under each column.\newline
+Note: Print NULL when there are no more names corresponding to an occupation.\newline
+Note: Input format and Sample Input are the same as the previous problem.
+\subsection*{Sample Output:}
+\begin{verbatim}
+Jenny    Ashley     Meera  Jane
+Samantha Christeen  Priya  Julia
+NULL     Ketty      NULL   Maria
+\end{verbatim}
+\textbf{Explanation:}
+The first column is an alphabetically ordered list of Doctor names.\newline
+The second column is an alphabetically ordered list of Professor names. \newline
+The third column is an alphabetically ordered list of Singer names. \newline
+The fourth column is an alphabetically ordered list of Actor names. \newline
+The empty cell data for columns with less than the maximum number of names per occupation (in this case, the Professor and Actor columns) are filled with NULL values.
+\subsection*{Solution Hint}
+OCCUPATIONS table has 2 columns: Name and Occupation. We need to pivot the Occupation column to create separate columns for each occupation type (Doctor, Professor, Singer, Actor) and list the corresponding names under each column.
+\subsection*{Syntax elements used:}
+\begin{itemize}
+    \item \textit{\textbf{PARTITION BY column}}: Divides the output into partitions to which the ROW\_NUMBER() function is applied./ở đây ta chia bảng thành 4 nhóm nghề khác nhau.
+    \item \textit{\textbf{ROW\_NUMBER()}}: Assigns a unique sequential integer to rows within a partition of a result set, starting at 1 for the first row in each partition./đánh số thứ tự cho từng tên trong mỗi nhóm nghề.
+    \item \textit{\textbf{CASE WHEN condition THEN result END}}: Evaluates a list of conditions like an IF-THEN-ELSE statement.
+    \item \textit{\textbf{GROUP BY column}}: Groups rows that have the same values in the specified column.
+    \item \textit{\textbf{ORDER BY column}}: Sorts the result set based on the specified column.
+\end{itemize}
+\subsection*{SQL Query: }
+\begin{lstlisting}[style=sqlstyle]
+SELECT
+    MAX(CASE WHEN Occupation = 'Doctor'    THEN Name END) AS Doctor,
+    MAX(CASE WHEN Occupation = 'Professor' THEN Name END) AS Professor,
+    MAX(CASE WHEN Occupation = 'Singer'    THEN Name END) AS Singer,
+    MAX(CASE WHEN Occupation = 'Actor'     THEN Name END) AS Actor
+FROM (
+    SELECT
+        Name,
+        Occupation,
+        ROW_NUMBER() OVER (PARTITION BY Occupation ORDER BY Name) AS rn
+    FROM OCCUPATIONS
+) ranked
+GROUP BY rn
+ORDER BY rn;
+\end{lstlisting}
+\subsection{Binary Tree Nodes}
+You are given a table, BST, containing two columns: N and P, where N represents the value of a node in Binary Tree, and P is the parent of N.
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|} \hline
+\textit{Column} & \textit{Type} \\ \hline
+\textit{N} & \textit{Integer} \\ \hline
+\textit{P} & \textit{Integer} \\ \hline
+\end{tabular}
+\end{table}
+Write a query to find the node type of Binary Tree ordered by the value of the node. Output one of the following for each node:
+\begin{itemize}
+    \item \texttt{Root}If node is root node.
+    \item \texttt{Leaf} If node is leaf node.
+    \item \texttt{Inner} If node is neither root nor leaf node.
+\end{itemize}
+\textbf{Sample Input:}
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|} \hline
+\textit{N} & \textit{P} \\ \hline
+1 & 2 \\ \hline
+3 & 2 \\ \hline
+6 & 8 \\ \hline
+9 & 8 \\ \hline
+2 & 5 \\ \hline
+8 & 5 \\ \hline
+5 & NULL \\ \hline
+\end{tabular}
+\end{table}
+\textbf{Sample Output:}
+\begin{verbatim}
+1 Leaf
+2 Inner
+3 Leaf
+5 Root
+6 Leaf
+8 Inner
+9 Leaf
+\end{verbatim}
+\textbf{Explanation:}
+The Binary Tree below illustrates the sample:
+\begin{center}
+\begin{tikzpicture}[
+  level distance=2.2cm,
+  level 1/.style={sibling distance=6.2cm},
+  level 2/.style={sibling distance=2.2cm},
+  every node/.style={
+    circle,
+    draw=black,
+    very thick,
+    minimum size=11mm,
+    inner sep=0pt,
+    fill=blue!20,
+    font=\bfseries
+  },
+  edge from parent/.style={
+    draw=black,
+    thick,
+    -{Stealth[length=2mm]}
+  }
+]
+\node {5}
+  child { node {2}
+    child { node {1} }
+    child { node {3} }
+  }
+  child { node {8}
+    child { node {6} }
+    child { node {9} }
+  };
+\end{tikzpicture}
+\end{center}
+\subsection*{Solution Hint}
+To determine the type of each node in the binary tree, we can use conditional statements to check the values of N and P.
+\begin{itemize}
+    \item If P is NULL, the node is the root.
+    \item If N does not appear as a parent (P) for any other node, it is a leaf.
+    \item Otherwise, it is an inner node.
+    \item Use \textit{\textbf{CASE WHEN ... THEN ... ELSE ... END}} to implement the conditional logic.
+\end{itemize}
+\subsection*{SQL Query: }
+\begin{lstlisting}[style=sqlstyle]
+SELECT
+    N,
+    CASE
+        WHEN P IS NULL THEN 'Root'
+        WHEN N NOT IN (SELECT P FROM BST WHERE P IS NOT NULL) THEN 'Leaf'
+        ELSE 'Inner'
+    END
+FROM BST
+ORDER BY N;
+\end{lstlisting}
+\subsection{New Companies}
+\textbf{Problem Statement:}
+\href{https://www.hackerrank.com/challenges/the-company/problem?isFullScreen=true}{HackerRank - The Company}
+\subsection*{Solution Hint}
 
 \end{document}
