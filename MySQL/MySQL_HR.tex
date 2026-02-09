@@ -52,7 +52,8 @@
     \renewcommand{\footrulewidth}{0pt}
     \fancyfoot[C]{%
         Student, Ho Chi Minh City, Vietnam\\
-        e-mail: hoangthien312006@gmail.com%
+        E-mail: hoangthien312006@gmail.com\\
+        HackerRank: \href{https://www.hackerrank.com/profile/artisthelios}{hackerrank.com/artisthelios}
     }
 }
 
@@ -84,9 +85,10 @@ SQL (Structured QUery Language) là ngôn ngữ để bạn "nói chuyện" vớ
 \end{itemize}
 \subsection{Thiết lập môi trường}
 Để thực hành SQL, bạn cần cài đặt:
-Cài đặt MySQL 8.0.45: \hyperlink{MySQL Installer 8.0.45}{https://dev.mysql.com/downloads/installer/}
-Cài đặt Workbench 8.0.45: \hyperlink{MySQL Workbench 8.0.45}{https://dev.mysql.com/downloads/workbench/}
-Hoặc muốn làm online truy cập supabase.com, db-fiddle.com, replit.com, v.v...
+\begin{enumerate}
+    \item Cài đặt MySQL 8.0.45: \hyperlink{https://dev.mysql.com/downloads/installer/}{MySQL Installer 8.0.45}.
+    \item Cài đặt Workbench 8.0.45: \hyperlink{https://dev.mysql.com/downloads/workbench/}{MySQL Workbench 8.0.45}.
+\end{enumerate}
 Luyện tập trên HackerRank, LeetCode, v.v...
 \subsection{Dữ liệu mẫu}
 \textbf{Cửa hàng trái cây}
@@ -254,6 +256,7 @@ RIGHT JOIN SanPham ON DonHang.SanPhamID = SanPham.ID;
 \texttt{RIGHT JOIN} & Lấy cả bảng PHẢI \& phần chung của bảng TRÁI& Ít dùng. Dùng khi bảng quan trọng nằm phía sau câu lệnh.\\ \hline
 \end{tabularx}
 \end{table}
+
 \section{Basic SQL}
 \subsection{Triangle Classification Query}
 Write a query identifying the type of each record in the \texttt{TRIANGLES} table using its three side lengths.  
