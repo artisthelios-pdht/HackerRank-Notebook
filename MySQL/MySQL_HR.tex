@@ -65,7 +65,195 @@
 \tableofcontents
 \newpage
 \section{Introduction to MySQL}
+\subsection{SQL \& Database là gì?}
+\subsubsection{Database là gì?}
+Hãy tưởng tượng Database giống như một file Excel khổng lồ, nhưng thông minh hơn và chứa được hàng triệu dòng dữ liệu.
+\begin{itemize}
+    \item Table (Bảng): Tương đương với một Sheet trong Excel.
+    \item Row (Dòng/bản ghi): Một dòng dữ liệu (ví dụ: thông tin 1 khách hàng).
+    \item Column (Cột/trường): Thuộc tính của dữ liệu (ví dụ: tên, tuổi, địa chỉ).
+\end{itemize}
+\subsubsection{SQL là gì?}
+SQL (Structured QUery Language) là ngôn ngữ để bạn "nói chuyện" với Database. Bạn không dùng chuột kéo thả, mà dùng câu lệnh 
+để yêu cầu Databse trả về kết quả.
+\subsubsection{Khái niệm bắt buộc phải nhớ}
+\begin{itemize}
+    \item Primary Key (Khóa chính): Cột định danh duy nhất (ví dụ số CCCD, MSSV). Không được trùng, không được để trống.
+    \item Foreign Key (Khóa ngoại): Cột dùng để nối sang bảng khác (ví dụ Trong bảng Đơn Hàng có cột Ma\_Khach\_Hang để biết ai mua).
+    \item SQL không PHÂN BIỆT chữ HOA và chữ THƯỜNG.
+\end{itemize}
+\subsection{Thiết lập môi trường}
+Để thực hành SQL, bạn cần cài đặt:
+Cài đặt MySQL 8.0.45: \hyperlink{MySQL Installer 8.0.45}{https://dev.mysql.com/downloads/installer/}
+Cài đặt Workbench 8.0.45: \hyperlink{MySQL Workbench 8.0.45}{https://dev.mysql.com/downloads/workbench/}
+Hoặc muốn làm online truy cập supabase.com, db-fiddle.com, replit.com, v.v...
+Luyện tập trên HackerRank, LeetCode, v.v...
+\subsection{Dữ liệu mẫu}
+\textbf{Cửa hàng trái cây}
+Gồm 3 bảng: 
+\begin{enumerate}
+    \item KhachHang: Chứa thông tin người mua.
+    \item SanPham: Chứa thông tin hàng hóa.
+    \item DonHang: Lưu lịch sử giao dịch.
+\end{enumerate}
+\begin{lstlisting}[style=sqlstyle]
+--Tao bang KhachHang
+CREATE TABLE KhachHang(
+    ID INT PRIMARY KEY,
+    Ten TEXT,
+    ThanhPho TEXT
+);
+--Tao bang SanPham
+CREATE TABLE SanPham(
+    ID INT PRIMARY KEY,
+    Ten TEXT,
+    Gia DECIMAL(10,2),
+    Loai TEXT
+);
+--Tao bang DonHang
+CREATE TABLE DonHang(
+    ID INT PRIMARY KEY,
+    KhachHangID INT,
+    SanPhamID INT,
+    SoLuong INT,
+    NgayMua DATE
+);
+-- Them du lieu mau
+INSERT INTO KhachHang VALUES 
+(1, 'Nguyen Van A', 'Ha Noi'),
+(2, 'Tran Thi B', 'HCM'),
+(3, 'Le Van C', 'Da Nang'),
+(4, 'Pham Thi D', 'Ha Noi');
 
+INSERT INTO SanPham VALUES 
+(101, 'Tao My', 50000, 'Trai Cay'),
+(102, 'Banh My', 15000, 'Thuc Pham'),
+(103, 'Nuoc Ngot', 10000, 'Do Uong'),
+(104, 'Nho Han Quoc', 200000, 'Trai Cay');
+
+INSERT INTO DonHang VALUES 
+(1, 1, 101, 2, '2023-10-01'), -- A mua 2 Tao
+(2, 1, 103, 5, '2023-10-02'), -- A mua 5 Nuoc ngot
+(3, 2, 104, 1, '2023-10-03'), -- B mua 1 Nho
+(4, 3, 102, 3, '2023-10-05'); -- C mua 3 Banh my
+-- Khach D chua mua gi ca
+\end{lstlisting}
+\subsection{Truy vấn cơ bản}
+\subsubsection{Cấu trúc \textbf{"xương sống"}}
+\begin{center}
+    \textbf{SELECT} (Cái gì) \textbf{FROM} (Ở đâu) \textbf{WHERE} (Điều kiện);
+\end{center}
+\subsubsection{Ví dụ thực hành}
+\textbf{Bài Toán 1: } Lấy tên và thành phố của tất cả các khách hàng.
+\begin{lstlisting}[style=sqlstyle]
+select Ten, ThanhPho
+from KhachHang;
+\end{lstlisting}
+\textbf{Bài Toán 2: } Lấy tất cả thông tin của sản phẩm có giá trên 40,000VND.
+\begin{lstlisting}[style=sqlstyle]
+Select * from SanPham
+where Gia > 40000;
+\end{lstlisting}
+\textbf{Note: } Dấu \texttt{*} nghĩa là tất cả các cột.
+\textbf{Bài Toán 3 (kết hợp điều kiện): } Tìm sản phẩm là trái cây và giá dưới 100,000VND.
+\begin{lstlisting}
+Select * from SanPham
+where Loai = 'Trai Cay' and Gia < 100000;
+\end{lstlisting}
+\subsubsection{Các syntax quan trọng}
+\begin{table}[H]
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|c|>{\small}p{4cm}|}\hline
+\textbf{Câu lệnh} & \textbf{Ý nghĩa} & \textbf{Ví dụ} \\ \hline
+\texttt{DISTINCT} & Loại bỏ các giá trị trùng lặp & \texttt{SELECT DISTINCT ThanhPho\dots} (HN, HCM, ĐN 1 lần)\\ \hline
+\texttt{ORDER BY} & Sắp xếp kết quả & \texttt{ORDER BY Gia DESC} (Giảm), \texttt{ASC} (Tăng)\\ \hline
+\texttt{LIMIT} & Giới hạn số dòng kết quả & \texttt{LIMIT 5} (5 dòng đầu)\\ \hline
+\texttt{LIKE} & Tìm kiếm gần đúng & \texttt{WHERE Ten LIKE 'N\%'} (tên bắt đầu N)\\ \hline
+\texttt{IN} & Kiểm tra thuộc tập hợp & \texttt{WHERE ThanhPho IN ('Ha Noi', 'HCM')}\\ \hline
+\end{tabular}
+\end{table}
+\subsection{Xử lý dữ liệu \& Hàm}
+Khi sếp hỏi: "Tổng doanh thu là bao nhiêu?", "Giá trung bình là bao nhiêu?", bạn không thể ngồi đếm từng dòng.
+\textbf{Các hàm phổ biến: }
+\begin{enumerate}
+    \item \texttt{COUNT(*)}: Đếm số dòng.
+    \item \texttt{SUM(column)}: Tính tổng giá trị trong cột.
+    \item \texttt{AVG(column)}: Tính giá trị trung bình.
+    \item \texttt{MAX(column)}: Lấy giá trị lớn nhất trong cột.
+    \item \texttt{MIN(column)}: Lấy giá trị nhỏ nhất trong cột.
+\end{enumerate}
+\textbf{Ví dụ: } Đếm xem có bao nhiêu khách hàng ở Hà Nội.
+\begin{lstlisting}[style=sqlstyle]
+Select count(*) 
+from KhachHang
+where ThanhPho = 'Ha Noi';
+\end{lstlisting}
+$\rightarrow$ Kết quả: 2
+\subsection{Gom nhóm dữ liệu - GROUP BY}
+Hãy tưởng tượng \texttt{GROUP BY} giống như Pivot Table trong Excel. Nó gom các dòng có giá trị giống nhau lại thành một nhóm để tính toán.\newline
+\textbf{Quy Tắc Vàng: }Nếu dùng hàm \texttt{SUM, COUNT...} đi kèm với một cột không tính toán (như Tên, Thành Phố), bạn BẮT BUỘC phải \texttt{GROUP BY} cột đó.
+\textbf{Bài Toán: } Mỗi Thành phố có bao nhiêu khách hàng?
+\begin{lstlisting}[style=sqlstyle]
+Select ThanhPho, Count(*) as SoKhachHang
+from KhachHang
+group by ThanhPho;
+\end{lstlisting}
+$\rightarrow$ Kết quả: Ha Noi - 2, HCM - 1, Da Nang - 1
+\textbf{Bài Toán Nâng Cao: } Chỉ hiện thành phố nào có từ 2 khách trở lên.
+\begin{lstlisting}[style=sqlstyle]
+Select ThanhPho, Count(*) as SoKhachHang
+from KhachHang
+group by ThanhPho
+having SoKhachHang >= 2;
+\end{lstlisting}
+\textbf{Lưu ý: } \texttt{HAVING} giống \texttt{WHERE} nhưng dùng để lọc nhóm sau khi đã \texttt{GROUP BY}.
+\subsection{Nối bảng - JOIN}
+Dữ liệu thực tế nằm ở nhiều bảng. \texttt{JOIN} giúp bạn kết hợp dữ liệu từ nhiều bảng dựa trên một cột chung (thường là \texttt{Primary Key} và \texttt{Foreign Key}).
+\subsubsection{INNER JOIN - JOIN}
+Chỉ lấy những dòng có mặt ở cả 2 bảng.\newline
+\textbf{Ví dụ:} Chỉ hiện khách hàng đã từng mua hàng. Khách D chưa mua gì sẽ không hiện.
+\begin{lstlisting}[style=sqlstyle]
+select k.Ten, d.NgayMua
+from KhachHang k
+INNER JOIN DonHang d --hoac JOIN cung duoc
+ON k.ID = d.KhachHangID;
+\end{lstlisting}
+\subsubsection{LEFT JOIN}
+Lấy tất cả bảng bên trái (KhachHang), bảng bên phải (DonHang) có thì hiện, không có thì để NULL.\newline
+\textbf{Ví dụ:} Danh sách tất cả khách hàng và ngày mua (nếu có).
+\begin{lstlisting}[style=sqlstyle]
+select k.Ten, d.NgayMua
+from KhachHang k
+LEFT JOIN DonHang d
+ON k.ID = d.KhachHangID;
+\end{lstlisting}
+$\rightarrow$ Kết quả: Phạm Thị D sẽ hiện ra nhưng cột NgayMua là NULL.
+\subsubsection{RIGHT JOIN}
+Ngược lại với LEFT JOIN. Lấy tất cả bảng bên phải (đứng sau từ JOIN), bảng bên trái có thì hiện, không có thì NULL.
+\textbf{Tình huống:} Bạn muốn liệt kê tất cả Sản Phẩm trong kho, và xem nó đã được bán trong Đơn hàng nào. Nếu chưa bán thì hiện NULL.\newline
+Vì Bảng Trái: DonHang.
+Bảng Phải: SanPham - bảng được ưu tiên lấy hết.
+\begin{lstlisting}[style=sqlstyle]
+SELECT DonHang.ID as MaDon, SanPham.TenSP
+FROM DonHang 
+RIGHT JOIN SanPham ON DonHang.SanPhamID = SanPham.ID;
+\end{lstlisting}
+\textbf{Thực tế: } ít khi dùng RIGHT JOIN thay vào đó đổi vị trí 2 bảng và dùng LEFT JOIN cho dễ đọc từ trái sang phải.
+\begin{center}
+    DonHang RIGHT JOIN SanPham = SanPham LEFT JOIN DonHang
+\end{center}
+\subsubsection{Tổng kết}
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{|c|X|X|}
+\hline
+\textbf{Loại Join} & \textbf{Dữ liệu trả về} & \textbf{Khi nào dùng?} \\ \hline
+\texttt{INNER JOIN} & Chỉ phần chung của 2 bảng &  Khi cần dữ liệu chắc chắn có ở 2 bảng\\ \hline
+\texttt{LEFT JOIN} & Lấy cả bảng TRÁI \& phần chung của bảng PHẢI (nếu không có thì NULL)& Khi muốn giữ toàn bộ danh sách gốc (VD: Danh sách lớp) dù họ có điểm thi hay chưa.\\ \hline
+\texttt{RIGHT JOIN} & Lấy cả bảng PHẢI \& phần chung của bảng TRÁI& Ít dùng. Dùng khi bảng quan trọng nằm phía sau câu lệnh.\\ \hline
+\end{tabularx}
+\end{table}
 \section{Basic SQL}
 \subsection{Triangle Classification Query}
 Write a query identifying the type of each record in the \texttt{TRIANGLES} table using its three side lengths.  
