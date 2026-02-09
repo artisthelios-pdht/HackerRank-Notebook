@@ -1,4 +1,6 @@
 # HackerRank Notebook
+**Author:** Pham Dang Hoang Thien  
+**HackerRank:** [hackerrank.com/artisthelios](https://www.hackerrank.com/profile/artisthelios)
 
 A notebook for documenting my HackerRank practice across multiple domains, including SQL, problem solving, and other technical tracks.
 
@@ -25,4 +27,5 @@ This repository helps me:
   - input/constraints/sample
   - query/solution
   - short explanation
+
 
